@@ -1,0 +1,15 @@
+# This script makes the diff between 2 folders, indicating which files or directories are different between both. 
+# Remember to use absolute paths, and not relative paths, or the difference in the relative paths is also considered a difference
+
+$Folder1 = "source_folder_path"
+$Folder2 = "dest_folder_path"
+function Get-Directories ($path)
+{
+    $PathLength = $path.length
+    Get-ChildItem $path -Recurse | % {
+        Add-Member -InputObject $_ -MemberType NoteProperty -Name RelativePath -Value $_.FullName.substring($PathLength+1)
+        $_
+    }
+}
+
+Compare-Object (Get-Directories $Folder1) (Get-Directories $Folder2) -Property RelativePath | Sort RelativePath, Name -desc
